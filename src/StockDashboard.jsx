@@ -45,40 +45,17 @@ const Input = (props) => (
 
 // ---------------- MOCK STOCK API (UNCHANGED PARAMETERS) ----------------
 async function fetchStock(symbol) {
-    await new Promise((r) => setTimeout(r, 600));
+    const response = await fetch(
+        `http://localhost:8080/api/stocks/${symbol}`
+    );
 
-    const base = 100 + Math.random() * 200;
+    if (!response.ok) {
+        throw new Error("Stock not found");
+    }
 
-    const history = Array.from({ length: 12 }).map((_, i) => ({
-        day: `D${i + 1}`,
-        price: Math.round(base + Math.random() * 20 - 10),
-    }));
-
-    const price = history[history.length - 1].price;
-    const prevClose = Math.round(base - 2);
-
-    return {
-        symbol: symbol.toUpperCase(),
-        company: "Demo Industries Ltd.",
-        price,
-        open: Math.round(base),
-        high: Math.round(base + 15),
-        low: Math.round(base - 15),
-        prevClose,
-        change: (price - prevClose).toFixed(2),
-        changePercent: (((price - prevClose) / prevClose) * 100).toFixed(2),
-        volume: Math.floor(Math.random() * 1000000),
-        marketCap: (Math.random() * 500).toFixed(2) + " B",
-        peRatio: (Math.random() * 30 + 5).toFixed(2),
-        dividendYield: (Math.random() * 3).toFixed(2) + "%",
-        week52High: Math.round(base + 80),
-        week52Low: Math.round(base - 60),
-        avgVolume: Math.floor(Math.random() * 800000),
-        eps: (Math.random() * 20).toFixed(2),
-        beta: (Math.random() * 2).toFixed(2),
-        history,
-    };
+    return await response.json();
 }
+
 
 // ---------------- DASHBOARD ----------------
 export default function StockDashboard() {
